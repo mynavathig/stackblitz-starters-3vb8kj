@@ -32,6 +32,7 @@ export class LoginComponent implements OnInit {
 
   get f() { return this.form.controls; }
 
+
   onSubmit() {
     this.submitted = true;
 
@@ -45,15 +46,13 @@ export class LoginComponent implements OnInit {
 
     this.loading = true;
     this.accountService.login(this.f.username.value, this.f.password.value)
-        .pipe(first())
         .subscribe({
-            next: () => {
-                // get return url from query parameters or default to home page
-                const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
-                this.router.navigateByUrl(returnUrl);
+            next: (user) => {
+                this.accountService.setToken(user.token);
+                this.router.navigateByUrl('/dashboard');
             },
             error: error => {
-                this.error = error;
+                this.error = JSON.stringify(error);
                 this.loading = false;
             }
         });
